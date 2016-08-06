@@ -1,1 +1,141 @@
-this is a test
+<head>
+<style type="text/css">
+
+	/* minimal reset*/
+	ol, ul {
+	    list-style: none outside none;
+	}
+
+	html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+	    background: none repeat scroll 0 0 transparent;
+	    border: 0 none;
+	    font-size: 100%;
+	    margin: 0;
+	    outline: 0 none;
+	    padding: 0;
+	    vertical-align: baseline;
+	}
+
+	.form, .bytes {
+		font-family: monospace;
+	}
+
+	.form {
+		color: black;
+	}
+
+	.bytes {
+		font-style: italic;
+	}
+
+	.results {
+		display: flex;
+	}
+
+	.results > ul {
+		background: red;
+		padding: 1em 0em;
+	}
+
+	.results > ul > li {
+		padding: 1em 1.5em;
+		margin: 0.2em 0.2em;
+
+		cursor: pointer;
+	}
+
+	.results > ul > li:hover {
+		color: wheat;
+	}
+
+	.results > ul > li.active {
+		background: gray;
+	}
+
+	.results > .instruction-details {
+		background: green;
+		padding: 1em;
+		flex-grow: 1;
+	}
+</style>
+</head>
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="underscore.min.js"></script>
+    <script src="weld.js"></script>
+    
+    <script>
+    	/*
+		  @function {jQuery object}
+		    Turn weld into a jQuery plugin.
+		  @param {object} data
+		    The data which will be used for the weld.
+		  @param {object} config
+		    An optional configuration object.
+
+		  Example: $('contacts').weld([ { name: 'John' } ])
+		*/
+		$.fn.weld = function (data, config) {
+		  return this.each (function () {
+		    weld(this, data, config);
+		  });
+		};
+    </script>
+
+    <script src="data.js"></script>
+
+	<h1>Archdoc</h1>
+	<label>Instruction:
+	<input type="text" /></label>
+	<div class="results">
+		<ul class="list">
+			<li class="list-item"><span class="name">Opcode 1</span></li>
+		</ul>
+		<div class="instruction-details">
+			<h2 class="name">Opcode 1</h2>
+			<p class="description">Adds two numbers</p>
+			
+			<h3>Opcode classes</h3>
+			<p class="tags">ALU, 32 bit</p>
+			<h3>Encodings</h3>
+            <span class="bytes">0f 67 77 /r</span> - <span class="assembly">add eax, rd1</span>
+			<!--
+            <ul>
+				<li><span class="bytes">0f 67 77 /r</span> - <span class="form">add eax, rd1</span></li>
+				<li><span class="bytes">0f 67 77 /r</span> - <span class="form">add ecx, rd1</span></li>
+			</ul> 
+            -->
+		</div>
+	</div>
+    
+    <script>
+        (function() {
+            
+            var opcodeList = _.map(opcodeData, function(instruction) { 
+                return {
+                    name: instruction.name
+                } 
+            });
+            
+            $(".list-item").weld(opcodeList);
+            
+            var opcodeDetails = _.map(opcodeData, function(instruction) {
+                return {
+                    name: instruction.name,
+                    description: instruction.description,
+                    tags: instruction.tags.join("<br/> "),
+                    bytes: instruction.encodings[0].bytes,
+                    assembly: instruction.encodings[0].assembly
+                };
+            })
+            
+            var currentOpcode = _.first(opcodeDetails);
+            
+            console.log(currentOpcode);
+            
+            $(".instruction-details").weld(currentOpcode);   
+        
+        
+        })();
+    </script>
+</body>
